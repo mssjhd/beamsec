@@ -41,18 +41,15 @@ state["bar_top"] = st.number_input("Bar Top Diameter (mm)", value=state["bar_top
 state["num_bar_top"] = st.number_input("Number of Top Bars", value=state["num_bar_top"], step=1)
 state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
-if st.button("Calculate .."):
-    total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-    result_text = "LINE 0,0  10,7  "
-    save_state(state)
+total_bars = state["num_bar_bottom"] + state["num_bar_top"]
+text_to_copy = "LINE 0,0  10,7  " 
 
-    st.success("✅ Click the button to copy to clipboard.")
+save_state(state)
 
-    # Hidden HTML and JS for clipboard
-    st.components.v1.html(f"""
-        <input type="text" value="{result_text}" id="toCopy" style="position:absolute; left:-1000px;">
-        <button onclick="navigator.clipboard.writeText(document.getElementById('toCopy').value)">📋 Copy Line</button>
-    """, height=50)
+if st.button("Calculate and Prepare Clipboard"):
+    st.success("✅ Click below to copy!")
+    # Hidden but copyable field with copy button
+    st.text_input("Copy to Clipboard:", value=text_to_copy, label_visibility="collapsed")
 
 
 
