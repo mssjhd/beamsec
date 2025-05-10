@@ -47,6 +47,6 @@ if st.button("Calculate .."):
     save_state(state)
 
     st.success("✅ Click below to copy this line:")
-    st.code(command_text)
+    st.code(command_text,language=None)
 
 
