@@ -43,10 +43,16 @@ state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
 if st.button("Calculate .."):
     total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-    command_text = "LINE 0,0  10,7  "
+    result_text = f"LINE 0,0  10,7  ; Total Bars: {total_bars}"
     save_state(state)
 
-    st.success("✅ Click below to copy this line:")
-    st.code(command_text,language=None)
+    st.success("✅ Click the button to copy to clipboard.")
+
+    # Hidden HTML and JS for clipboard
+    st.components.v1.html(f"""
+        <input type="text" value="{result_text}" id="toCopy" style="position:absolute; left:-1000px;">
+        <button onclick="navigator.clipboard.writeText(document.getElementById('toCopy').value)">📋 Copy Line</button>
+    """, height=50)
+
 
 
