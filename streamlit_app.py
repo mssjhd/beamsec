@@ -30,6 +30,7 @@ state = load_state()
 
 st.title("Reinforcement Bar Calculator")
 
+# Inputs in two columns
 col1, col2 = st.columns(2)
 with col1:
     state["b"] = st.number_input("b (mm)", value=state["b"])
@@ -44,14 +45,11 @@ state["num_bar_top"] = st.number_input("Number of Top Bars", value=state["num_ba
 state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
 if st.button("Calculate .."):
-    try:
-        total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-        command_text = "LINE 0,0  10,7"
+    total_bars = state["num_bar_bottom"] + state["num_bar_top"]
+    command_text = f"LINE 0,0  10,7  ; Total Bars: {total_bars}"
+    
+    save_state(state)
 
-        save_state(state)
-        st.success("✅ Click below to copy this line command:")
-        st.code(command_text)
-
-    except ValueError:
-        st.error("❌ Please enter valid numbers.")
+    st.success("✅ Click below to copy this line command:")
+    st.code(command_text)
 
