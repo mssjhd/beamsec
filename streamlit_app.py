@@ -1,7 +1,6 @@
 import streamlit as st
 import json
 import os
-import pyperclip
 
 STATE_FILE = "session_state.json"
 
@@ -27,12 +26,10 @@ def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f)
 
-# Load saved state
 state = load_state()
 
 st.title("Reinforcement Bar Calculator")
 
-# Create two columns for b and h
 col1, col2 = st.columns(2)
 with col1:
     state["b"] = st.number_input("b (mm)", value=state["b"])
@@ -49,10 +46,12 @@ state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 if st.button("Calculate .."):
     try:
         total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-        st.success("✅ Total Bars copied to clipboard!")
-        pyperclip.copy("LINE 0,0  10,7")  # Copying a custom string
+        command_text = "LINE 0,0  10,7"
+
         save_state(state)
+        st.success("✅ Click below to copy this line command:")
+        st.code(command_text)
+
     except ValueError:
         st.error("❌ Please enter valid numbers.")
 
-st.info("📋 The command `LINE 0,0  10,7` has been copied to your clipboard.")
