@@ -1,10 +1,8 @@
-import flet as ft
+import streamlit as st
 import json
 import os
-import pyperclip  # Ensure you have pyperclip installed
+import pyperclip
 
-
-# File path to store the input values
 STATE_FILE = "session_state.json"
 
 # Load session state from file
@@ -13,7 +11,6 @@ def load_state():
         with open(STATE_FILE, "r") as f:
             return json.load(f)
     else:
-        # Default values if no state file exists
         return {
             "b": 600,
             "h": 300,
@@ -30,79 +27,32 @@ def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f)
 
-def main(page: ft.Page):
-    page.title = "Reinforcement Bar Calculator"
-    
-    # Set page alignment to center both vertically and horizontally
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+# Load saved state
+state = load_state()
 
-    # Load the previous session state or use default values
-    state = load_state()
+st.title("Reinforcement Bar Calculator")
 
-    # Define input fields with values from session state
-    b_input = ft.TextField(label="b (mm)", value=str(state["b"]))
-    h_input = ft.TextField(label="h (mm)", value=str(state["h"]))
-    cover_input = ft.TextField(label="cover (mm)", value=str(state["cover"]))
-    bar_bottom_input = ft.TextField(label="Bar Bottom Diameter (mm)", value=str(state["bar_bottom"]))
-    num_bar_bottom_input = ft.TextField(label="Number of Bottom Bars", value=str(state["num_bar_bottom"]))
-    bar_top_input = ft.TextField(label="Bar Top Diameter (mm)", value=str(state["bar_top"]))
-    num_bar_top_input = ft.TextField(label="Number of Top Bars", value=str(state["num_bar_top"]))
-    stirrups_input = ft.TextField(label="Stirrups (mm)", value=str(state["stirrups"]))
+# Create two columns for b and h
+col1, col2 = st.columns(2)
+with col1:
+    state["b"] = st.number_input("b (mm)", value=state["b"])
+with col2:
+    state["h"] = st.number_input("h (mm)", value=state["h"])
 
-    # Button behavior to calculate and save state
-    def calculate_click(e):
-        # Ensure values are numeric
-        try:
-            total_bars = int(num_bar_bottom_input.value) + int(num_bar_top_input.value)
+state["cover"] = st.number_input("cover (mm)", value=state["cover"])
+state["bar_bottom"] = st.number_input("Bar Bottom Diameter (mm)", value=state["bar_bottom"])
+state["num_bar_bottom"] = st.number_input("Number of Bottom Bars", value=state["num_bar_bottom"], step=1)
+state["bar_top"] = st.number_input("Bar Top Diameter (mm)", value=state["bar_top"])
+state["num_bar_top"] = st.number_input("Number of Top Bars", value=state["num_bar_top"], step=1)
+state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
-            # Copy the result to the clipboard
-            pyperclip.copy(str(total_bars))
-            pyperclip.copy("LINE 0,0  10,7  ")
+if st.button("Calculate .."):
+    try:
+        total_bars = state["num_bar_bottom"] + state["num_bar_top"]
+        st.success("✅ Total Bars copied to clipboard!")
+        pyperclip.copy("LINE 0,0  10,7")  # Copying a custom string
+        save_state(state)
+    except ValueError:
+        st.error("❌ Please enter valid numbers.")
 
-            # Update the session state and save it to the file
-            state["b"] = int(b_input.value)
-            state["h"] = int(h_input.value)
-            state["cover"] = int(cover_input.value)
-            state["bar_bottom"] = int(bar_bottom_input.value)
-            state["num_bar_bottom"] = int(num_bar_bottom_input.value)
-            state["bar_top"] = int(bar_top_input.value)
-            state["num_bar_top"] = int(num_bar_top_input.value)
-            state["stirrups"] = int(stirrups_input.value)
-
-            save_state(state)  # Save updated state to file
-
-            # Show a success message (optional)
-            page.add(ft.Text("✅ Total Bars copied to clipboard!", color="green"))
-
-        except ValueError:
-            page.add(ft.Text("Please enter valid numbers for all fields.", color="red"))
-
-    # Calculate button
-    calculate_button = ft.ElevatedButton("Calculate ..", on_click=calculate_click)
-
-    # Add components to the page, placing them inside centered rows and columns
-    page.add(
-        ft.Column(
-            controls=[
-                ft.Row(
-        controls=[
-        ft.Container(content=b_input, expand=True),
-        ft.Container(content=h_input, expand=True),
-    ],
-    spacing=10
-                ),
-                cover_input,
-                bar_bottom_input,
-                num_bar_bottom_input,
-                bar_top_input,
-                num_bar_top_input,
-                stirrups_input,
-                calculate_button
-            ],
-            alignment=ft.MainAxisAlignment.CENTER  # Center vertically
-        )
-    )
-
-# Run the app
-ft.app(target=main)
+st.info("📋 The command `LINE 0,0  10,7` has been copied to your clipboard.")
