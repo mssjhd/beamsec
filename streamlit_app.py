@@ -43,7 +43,7 @@ state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
 if st.button("Calculate .."):
     total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-    command_text = f"LINE 0,0  10,7  ; Total Bars: {total_bars}"
+    command_text = "LINE 0,0  10,7  "
     save_state(state)
 
     st.success("✅ Click below to copy this line:")
