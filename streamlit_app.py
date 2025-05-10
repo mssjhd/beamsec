@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import streamlit.components.v1 as components
 
 STATE_FILE = "session_state.json"
 
@@ -42,14 +43,19 @@ state["num_bar_top"] = st.number_input("Number of Top Bars", value=state["num_ba
 state["stirrups"] = st.number_input("Stirrups (mm)", value=state["stirrups"])
 
 total_bars = state["num_bar_bottom"] + state["num_bar_top"]
-text_to_copy = "LINE 0,0  10,7  " 
+text_to_copy = f"LINE 0,0  10,7  ; Total Bars: {total_bars}"
 
 save_state(state)
 
-if st.button("Calculate and Prepare Clipboard"):
-    st.success("✅ Click below to copy!")
-    # Hidden but copyable field with copy button
-    st.text_input("Copy to Clipboard:", value=text_to_copy, label_visibility="collapsed")
+if st.button("Calculate and Copy"):
+    st.success("✅ Copied to clipboard!")
+
+    # JavaScript to copy text
+    components.html(f"""
+        <script>
+        navigator.clipboard.writeText("{text_to_copy}");
+        </script>
+    """, height=0)
 
 
 
